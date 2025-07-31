@@ -2,96 +2,74 @@
 
 **Mata Kuliah**: Sistem Operasi
 **Semester**: Genap / Tahun Ajaran 2024–2025
-**Nama**: `<Nama Lengkap>`
-**NIM**: `<Nomor Induk Mahasiswa>`
+**Nama**: `Ahmad Rafie Ramadhani Azzaki`
+**NIM**: `240202849`
 **Modul yang Dikerjakan**:
-`(Contoh: Modul 1 – System Call dan Instrumentasi Kernel)`
+`(Modul 4 – Subsistem Kernel Alternatif (xv6-public))`
 
 ---
 
 ## 📌 Deskripsi Singkat Tugas
+Modul ini bertujuan untuk memperluas subsistem kernel pada sistem operasi `xv6` dengan dua fitur utama:
 
-Tuliskan deskripsi singkat dari modul yang Anda kerjakan. Misalnya:
+`System Call chmod(path, mode)` untuk mengatur mode akses file `(read-only atau read-write)`.
 
-* **Modul 1 – System Call dan Instrumentasi Kernel**:
-  Menambahkan dua system call baru, yaitu `getpinfo()` untuk melihat proses yang aktif dan `getReadCount()` untuk menghitung jumlah pemanggilan `read()` sejak boot.
----
+`Pseudo-device /dev/random`, sebuah driver sederhana yang menghasilkan byte acak.
+
+Fitur ini membantu memperkenalkan konsep dasar perizinan file dan implementasi driver device di kernel.
 
 ## 🛠️ Rincian Implementasi
+Menambahkan field short mode pada struct inode di `fs.h` untuk menyimpan mode akses file.
 
-Tuliskan secara ringkas namun jelas apa yang Anda lakukan:
+Mengimplementasikan system call `chmod()` di `sysfile.c` untuk mengatur mode file.
 
-### Contoh untuk Modul 1:
+Mendaftarkan `chmod()` ke syscall melalui file `syscall.h`, `syscall.c`, `user.h`, dan `usys.S`.
 
-* Menambahkan dua system call baru di file `sysproc.c` dan `syscall.c`
-* Mengedit `user.h`, `usys.S`, dan `syscall.h` untuk mendaftarkan syscall
-* Menambahkan struktur `struct pinfo` di `proc.h`
-* Menambahkan counter `readcount` di kernel
-* Membuat dua program uji: `ptest.c` dan `rtest.c`
----
+Memodifikasi `file.c` untuk memblokir operasi tulis `(write())` jika inode berada dalam mode read-only.
+
+Membuat program uji `chmodtest.c` untuk memastikan proteksi tulis berjalan.
+
+Membuat driver baru `/dev/random` di file `random.c` menggunakan generator acak berbasis seed.
+
+Mendaftarkan driver random di array `devsw[]` pada `file.c` menggunakan dev major 3.
+
+Menambahkan pembuatan device node `/dev/random` pada `init.c` menggunakan mknod.
+
+Menambahkan program uji `randomtest.c` untuk membaca dan menampilkan byte acak.
+
+Menambahkan dua program tersebut ke Makefile `(_chmodtest, _randomtest)`.
 
 ## ✅ Uji Fungsionalitas
+Program uji yang digunakan:
 
-Tuliskan program uji apa saja yang Anda gunakan, misalnya:
+`chmodtest`: untuk menguji apakah file read-only tidak bisa ditulis.
 
-* `ptest`: untuk menguji `getpinfo()`
-* `rtest`: untuk menguji `getReadCount()`
-* `cowtest`: untuk menguji fork dengan Copy-on-Write
-* `shmtest`: untuk menguji `shmget()` dan `shmrelease()`
-* `chmodtest`: untuk memastikan file `read-only` tidak bisa ditulis
-* `audit`: untuk melihat isi log system call (jika dijalankan oleh PID 1)
-
----
+`randomtest`: untuk menguji bahwa `/dev/random` menghasilkan byte acak.
 
 ## 📷 Hasil Uji
-
-Lampirkan hasil uji berupa screenshot atau output terminal. Contoh:
-
-### 📍 Contoh Output `cowtest`:
-
-```
-Child sees: Y
-Parent sees: X
-```
-
-### 📍 Contoh Output `shmtest`:
-
-```
-Child reads: A
-Parent reads: B
-```
-
-### 📍 Contoh Output `chmodtest`:
-
-```
+### 📍 Output chmodtest:
+nginx
+Copy
+Edit
 Write blocked as expected
-```
-
-Jika ada screenshot:
-
-```
-![hasil cowtest](./screenshots/cowtest_output.png)
-```
-
----
+### 📍 Output randomtest:
+Copy
+Edit
+241 6 82 99 12 201 44 73
+- 📎 Catatan: Output randomtest akan berbeda-beda karena bersifat acak.
 
 ## ⚠️ Kendala yang Dihadapi
+Lupa mendaftarkan syscall `chmod()` di `syscall.c`, menyebabkan error saat kompilasi.
 
-Tuliskan kendala (jika ada), misalnya:
+Lupa memanggil `ilock()` sebelum mengakses inode, menyebabkan `kernel panic`.
 
-* Salah implementasi `page fault` menyebabkan panic
-* Salah memetakan alamat shared memory ke USERTOP
-* Proses biasa bisa akses audit log (belum ada validasi PID)
-
----
+Saat pertama menguji `/dev/random`, file tidak ditemukan karena mknod belum ditambahkan di `init.c`.
 
 ## 📚 Referensi
+xv6 Book (MIT)
 
-Tuliskan sumber referensi yang Anda gunakan, misalnya:
+xv6-public GitHub Repository
 
-* Buku xv6 MIT: [https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf](https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf)
-* Repositori xv6-public: [https://github.com/mit-pdos/xv6-public](https://github.com/mit-pdos/xv6-public)
-* Stack Overflow, GitHub Issues, diskusi praktikum
+Diskusi praktikum dan dokumentasi kernel xv6
 
----
-
+Stack Overflow untuk debugging syscall dan device driver
