@@ -10,7 +10,7 @@
 ---
 
 ## 📌 Deskripsi Singkat Tugas
-Modul 2 – Penjadwalan CPU Lanjutan (Priority Scheduling Non-Preemptive):
+Modul 2 – Penjadwalan CPU Lanjutan `(Priority Scheduling Non-Preemptive)`:
 Mengubah algoritma penjadwalan proses default Round Robin pada xv6 menjadi algoritma Priority Scheduling Non-Preemptive. Proses dengan prioritas numerik terkecil dijalankan lebih dahulu, dan proses lain menunggu meskipun sudah dalam status RUNNABLE.
 
 ## 🛠️ Rincian Implementasi
@@ -63,7 +63,7 @@ Awalnya lupa menginisialisasi nilai priority di `allocproc()` menyebabkan proses
 
 Salah urutan dalam menulis syscall menyebabkan error linking karena `set_priority` tidak dikenali oleh user space.
 
-Debugging scheduler cukup sulit karena tidak ada output langsung; harus diuji menggunakan program eksplisit seperti ptest.
+Debugging scheduler cukup sulit karena tidak ada output langsung; harus diuji menggunakan program eksplisit seperti `ptest`.
 
 ## 📚 Referensi
 Buku xv6 (MIT): https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf
