@@ -12,33 +12,33 @@
 ## 📌 Deskripsi Singkat Tugas
 Modul ini mengharuskan mahasiswa untuk menambahkan dua system call baru pada kernel xv6-public (x86), yaitu:
 
-getpinfo(struct pinfo *ptable): Untuk mendapatkan informasi semua proses aktif dalam sistem.
+`getpinfo(struct pinfo *ptable)`: Untuk mendapatkan informasi semua proses aktif dalam sistem.
 
-getreadcount(): Untuk menghitung jumlah pemanggilan read() sejak sistem boot.
+`getreadcount()`: Untuk menghitung jumlah pemanggilan `read()` sejak sistem boot.
 
 ## 🛠️ Rincian Implementasi
 Langkah-langkah implementasi:
 
-Menambahkan struktur pinfo di proc.h untuk menyimpan daftar proses aktif.
+Menambahkan struktur pinfo di `proc.h` untuk menyimpan daftar proses aktif.
 
-Menambahkan counter global readcount di sysproc.c.
+Menambahkan counter global readcount di `sysproc.c`.
 
-Menambahkan definisi syscall baru di syscall.h, syscall.c, user.h, dan usys.S.
+Menambahkan definisi syscall baru di `syscall.h`, `syscall.c`, `user.h`, dan `usys.S`.
 
-Mengimplementasikan fungsi sys_getpinfo() dan sys_getreadcount() di sysproc.c.
+Mengimplementasikan fungsi `sys_getpinfo()` dan `sys_getreadcount()` di `sysproc.c`.
 
-Menambahkan readcount++ di awal fungsi sys_read() pada sysfile.c.
+Menambahkan readcount++ di awal fungsi `sys_read()` pada `sysfile.c`.
 
-Membuat dua program uji ptest.c dan rtest.c untuk menguji fungsi yang telah ditambahkan.
+Membuat dua program uji `ptest.c` dan `rtest.c` untuk menguji fungsi yang telah ditambahkan.
 
 Mendaftarkan program uji ke dalam Makefile.
 
 ## ✅ Uji Fungsionalitas
 Program uji yang digunakan:
 
-ptest: Menguji apakah system call getpinfo() dapat mengambil informasi proses aktif.
+`ptest`: Menguji apakah system call `getpinfo()` dapat mengambil informasi proses aktif.
 
-rtest: Menguji apakah getreadcount() dapat menghitung jumlah pemanggilan fungsi read().
+`rtest`: Menguji apakah `getreadcount()` dapat menghitung jumlah pemanggilan fungsi `read()`.
 
 ## 📷 Hasil Uji
 ### 📍 Contoh Output ptest:
@@ -61,7 +61,7 @@ Read Count Setelah: 5
 <img width="802" height="367" alt="modul1" src="https://github.com/user-attachments/assets/aa85da42-ed05-45f5-ad71-d83992a9fced" />
 
 ## ⚠️ Kendala yang Dihadapi
-Awalnya sempat salah dalam implementasi argptr() di sys_getpinfo, sehingga pointer ptable tidak dapat diakses kernel.
+Awalnya sempat salah dalam implementasi `argptr()` di `sys_getpinfo`, sehingga pointer ptable tidak dapat diakses kernel.
 
 Kesalahan kecil saat menambahkan entri di Makefile menyebabkan program ptest tidak dikenali sampai file Makefile diperbaiki.
 
