@@ -70,7 +70,7 @@ Edit
 
 ## 📸 Screenshoot
 
-<img width="727" height="313" alt="modul5" src="https://github.com/user-attachments/assets/d73bb4a5-f7f6-496c-8622-a05f5353e37f" />
+<img width="1143" height="357" alt="modul5" src="https://github.com/user-attachments/assets/2362addb-69f6-4995-9f7e-9d3e0afe3829" />
 
 ## ⚠️ Kendala yang Dihadapi
 Awalnya lupa menambahkan validasi `PID` pada `sys_get_audit_log()`, sehingga semua proses dapat mengakses audit log.
