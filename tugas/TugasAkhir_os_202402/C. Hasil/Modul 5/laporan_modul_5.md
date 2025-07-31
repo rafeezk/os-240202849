@@ -2,96 +2,90 @@
 
 **Mata Kuliah**: Sistem Operasi
 **Semester**: Genap / Tahun Ajaran 2024–2025
-**Nama**: `<Nama Lengkap>`
-**NIM**: `<Nomor Induk Mahasiswa>`
+**Nama**: `Ahmad Rafie Ramadhani Azzaki`
+**NIM**: `240202849`
 **Modul yang Dikerjakan**:
-`(Contoh: Modul 1 – System Call dan Instrumentasi Kernel)`
+`(Modul 5 – Audit dan Keamanan Sistem (xv6-public))`
 
 ---
 
 ## 📌 Deskripsi Singkat Tugas
-
-Tuliskan deskripsi singkat dari modul yang Anda kerjakan. Misalnya:
-
-* **Modul 1 – System Call dan Instrumentasi Kernel**:
-  Menambahkan dua system call baru, yaitu `getpinfo()` untuk melihat proses yang aktif dan `getReadCount()` untuk menghitung jumlah pemanggilan `read()` sejak boot.
----
+Modul 5 ini bertujuan untuk menambahkan fitur audit log pada `xv6`. Semua pemanggilan system call akan dicatat ke dalam struktur `audit_log`, dan log ini hanya dapat diakses oleh proses dengan `PID 1` melalui system call baru `get_audit_log()`. Fitur ini penting untuk keamanan dan analisis aktivitas sistem.
 
 ## 🛠️ Rincian Implementasi
+Berikut langkah-langkah implementasi yang saya lakukan:
 
-Tuliskan secara ringkas namun jelas apa yang Anda lakukan:
+Menambahkan struktur `audit_entry` dan array `audit_log[]` di `syscall.c`.
 
-### Contoh untuk Modul 1:
+Memodifikasi fungsi `syscall()` untuk mencatat setiap pemanggilan system call yang valid.
 
-* Menambahkan dua system call baru di file `sysproc.c` dan `syscall.c`
-* Mengedit `user.h`, `usys.S`, dan `syscall.h` untuk mendaftarkan syscall
-* Menambahkan struktur `struct pinfo` di `proc.h`
-* Menambahkan counter `readcount` di kernel
-* Membuat dua program uji: `ptest.c` dan `rtest.c`
----
+Menambahkan system call baru `get_audit_log()` di:
+
+`syscall.h` (penambahan nomor syscall)
+
+`user.h` dan `usys.S` (deklarasi syscall)
+
+`sysproc.c` (implementasi syscall dengan validasi PID)
+
+`syscall.c` (pendaftaran syscall)
+
+Menambahkan file program uji audit.c untuk mengambil dan menampilkan isi audit log.
+
+Menambahkan `_audit` ke dalam target `UPROGS` di Makefile.
 
 ## ✅ Uji Fungsionalitas
+Program uji yang digunakan:
 
-Tuliskan program uji apa saja yang Anda gunakan, misalnya:
+`audit`: Menampilkan isi audit log.
 
-* `ptest`: untuk menguji `getpinfo()`
-* `rtest`: untuk menguji `getReadCount()`
-* `cowtest`: untuk menguji fork dengan Copy-on-Write
-* `shmtest`: untuk menguji `shmget()` dan `shmrelease()`
-* `chmodtest`: untuk memastikan file `read-only` tidak bisa ditulis
-* `audit`: untuk melihat isi log system call (jika dijalankan oleh PID 1)
+Jika dijalankan sebagai proses biasa (bukan PID 1), maka akan ditolak.
 
----
+Jika dijalankan oleh `PID 1` (sebagai init), maka isi audit log akan ditampilkan.
+
+Untuk pengujian, file `init.c` dimodifikasi agar menjalankan audit secara langsung, sehingga audit menjadi proses dengan `PID 1`.
 
 ## 📷 Hasil Uji
+### 📍 Contoh Output saat audit dijalankan sebagai `PID 1`:
 
-Lampirkan hasil uji berupa screenshot atau output terminal. Contoh:
+csharp
+Copy
+Edit
+=== Audit Log ===
+[0] PID=1 SYSCALL=5 TICK=12
+[1] PID=1 SYSCALL=6 TICK=13
+[2] PID=1 SYSCALL=10 TICK=14
+...
+### 📍 Contoh Output saat dijalankan sebagai proses biasa:
 
-### 📍 Contoh Output `cowtest`:
+nginx
+Copy
+Edit
+Access denied or error.
+Jika ada dokumentasi visual:
 
-```
-Child sees: Y
-Parent sees: X
-```
+scss
+Copy
+Edit
+![hasil audit](./screenshots/audit_output.png)
 
-### 📍 Contoh Output `shmtest`:
+## 📸 Screenshoot
 
-```
-Child reads: A
-Parent reads: B
-```
-
-### 📍 Contoh Output `chmodtest`:
-
-```
-Write blocked as expected
-```
-
-Jika ada screenshot:
-
-```
-![hasil cowtest](./screenshots/cowtest_output.png)
-```
-
----
+<img width="727" height="313" alt="modul5" src="https://github.com/user-attachments/assets/d73bb4a5-f7f6-496c-8622-a05f5353e37f" />
 
 ## ⚠️ Kendala yang Dihadapi
+Awalnya lupa menambahkan validasi `PID` pada `sys_get_audit_log()`, sehingga semua proses dapat mengakses audit log.
 
-Tuliskan kendala (jika ada), misalnya:
+Salah alokasi pointer buf di `syscall` menyebabkan kernel panic ketika proses non-init mencoba memanggil `get_audit_log`.
 
-* Salah implementasi `page fault` menyebabkan panic
-* Salah memetakan alamat shared memory ke USERTOP
-* Proses biasa bisa akses audit log (belum ada validasi PID)
-
----
+Harus memodifikasi `init.c` untuk menjadikan audit sebagai proses `PID 1` agar uji berhasil.
 
 ## 📚 Referensi
+Buku xv6 MIT: xv6 book (rev11)
 
-Tuliskan sumber referensi yang Anda gunakan, misalnya:
+xv6-public GitHub: https://github.com/mit-pdos/xv6-public
 
-* Buku xv6 MIT: [https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf](https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf)
-* Repositori xv6-public: [https://github.com/mit-pdos/xv6-public](https://github.com/mit-pdos/xv6-public)
-* Stack Overflow, GitHub Issues, diskusi praktikum
+Dokumentasi praktikum Sistem Operasi Fasilkom
 
+Diskusi rekan praktikum dan Stack Overflow
 ---
 
