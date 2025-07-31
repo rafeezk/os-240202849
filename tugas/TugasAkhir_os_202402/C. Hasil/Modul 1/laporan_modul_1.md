@@ -2,95 +2,81 @@
 
 **Mata Kuliah**: Sistem Operasi
 **Semester**: Genap / Tahun Ajaran 2024–2025
-**Nama**: `<Nama Lengkap>`
-**NIM**: `<Nomor Induk Mahasiswa>`
+**Nama**: `Ahmad Rafie Ramadhani Azzaki`
+**NIM**: `240202849`
 **Modul yang Dikerjakan**:
-`(Contoh: Modul 1 – System Call dan Instrumentasi Kernel)`
+`(Modul 1 – System Call dan Instrumentasi Kernel)`
 
 ---
 
-## 📌 Deskripsi Singkat Tugas
+📌 Deskripsi Singkat Tugas
+Modul ini mengharuskan mahasiswa untuk menambahkan dua system call baru pada kernel xv6-public (x86), yaitu:
 
-Tuliskan deskripsi singkat dari modul yang Anda kerjakan. Misalnya:
+getpinfo(struct pinfo *ptable): Untuk mendapatkan informasi semua proses aktif dalam sistem.
 
-* **Modul 1 – System Call dan Instrumentasi Kernel**:
-  Menambahkan dua system call baru, yaitu `getpinfo()` untuk melihat proses yang aktif dan `getReadCount()` untuk menghitung jumlah pemanggilan `read()` sejak boot.
----
+getreadcount(): Untuk menghitung jumlah pemanggilan read() sejak sistem boot.
 
-## 🛠️ Rincian Implementasi
+🛠️ Rincian Implementasi
+Langkah-langkah implementasi:
 
-Tuliskan secara ringkas namun jelas apa yang Anda lakukan:
+Menambahkan struktur pinfo di proc.h untuk menyimpan daftar proses aktif.
 
-### Contoh untuk Modul 1:
+Menambahkan counter global readcount di sysproc.c.
 
-* Menambahkan dua system call baru di file `sysproc.c` dan `syscall.c`
-* Mengedit `user.h`, `usys.S`, dan `syscall.h` untuk mendaftarkan syscall
-* Menambahkan struktur `struct pinfo` di `proc.h`
-* Menambahkan counter `readcount` di kernel
-* Membuat dua program uji: `ptest.c` dan `rtest.c`
----
+Menambahkan definisi syscall baru di syscall.h, syscall.c, user.h, dan usys.S.
 
-## ✅ Uji Fungsionalitas
+Mengimplementasikan fungsi sys_getpinfo() dan sys_getreadcount() di sysproc.c.
 
-Tuliskan program uji apa saja yang Anda gunakan, misalnya:
+Menambahkan readcount++ di awal fungsi sys_read() pada sysfile.c.
 
-* `ptest`: untuk menguji `getpinfo()`
-* `rtest`: untuk menguji `getReadCount()`
-* `cowtest`: untuk menguji fork dengan Copy-on-Write
-* `shmtest`: untuk menguji `shmget()` dan `shmrelease()`
-* `chmodtest`: untuk memastikan file `read-only` tidak bisa ditulis
-* `audit`: untuk melihat isi log system call (jika dijalankan oleh PID 1)
+Membuat dua program uji ptest.c dan rtest.c untuk menguji fungsi yang telah ditambahkan.
 
----
+Mendaftarkan program uji ke dalam Makefile.
 
-## 📷 Hasil Uji
+✅ Uji Fungsionalitas
+Program uji yang digunakan:
 
-Lampirkan hasil uji berupa screenshot atau output terminal. Contoh:
+ptest: Menguji apakah system call getpinfo() dapat mengambil informasi proses aktif.
 
-### 📍 Contoh Output `cowtest`:
+rtest: Menguji apakah getreadcount() dapat menghitung jumlah pemanggilan fungsi read().
 
-```
-Child sees: Y
-Parent sees: X
-```
+📷 Hasil Uji
+📍 Contoh Output ptest:
+yaml
+Copy
+Edit
+PID	MEM	NAME
+1	4096	init
+2	2048	sh
+3	2048	ptest
+📍 Contoh Output rtest:
+mathematica
+Copy
+Edit
+Read Count Sebelum: 4
+hello
+Read Count Setelah: 5
 
-### 📍 Contoh Output `shmtest`:
+📸 Screenshoot
+<img width="802" height="367" alt="modul1" src="https://github.com/user-attachments/assets/aa85da42-ed05-45f5-ad71-d83992a9fced" />
 
-```
-Child reads: A
-Parent reads: B
-```
+⚠️ Kendala yang Dihadapi
+Awalnya sempat salah dalam implementasi argptr() di sys_getpinfo, sehingga pointer ptable tidak dapat diakses kernel.
 
-### 📍 Contoh Output `chmodtest`:
+Kesalahan kecil saat menambahkan entri di Makefile menyebabkan program ptest tidak dikenali sampai file Makefile diperbaiki.
 
-```
-Write blocked as expected
-```
+Kernel panic terjadi ketika membaca pointer user-space yang tidak valid.
 
-Jika ada screenshot:
+📚 Referensi
+Buku xv6 (MIT): https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf
 
-```
-![hasil cowtest](./screenshots/cowtest_output.png)
-```
+Repositori xv6: https://github.com/mit-pdos/xv6-public
 
----
+Diskusi dan dokumentasi praktikum dari asisten
 
-## ⚠️ Kendala yang Dihadapi
+Stack Overflow untuk debugging pointer syscall
 
-Tuliskan kendala (jika ada), misalnya:
-
-* Salah implementasi `page fault` menyebabkan panic
-* Salah memetakan alamat shared memory ke USERTOP
-* Proses biasa bisa akses audit log (belum ada validasi PID)
-
----
-
-## 📚 Referensi
-
-Tuliskan sumber referensi yang Anda gunakan, misalnya:
-
-* Buku xv6 MIT: [https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf](https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf)
-* Repositori xv6-public: [https://github.com/mit-pdos/xv6-public](https://github.com/mit-pdos/xv6-public)
+Dokumentasi argptr() dan sistem memory kernel-user space dalam xv6public)
 * Stack Overflow, GitHub Issues, diskusi praktikum
 
 ---
