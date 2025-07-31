@@ -9,14 +9,14 @@
 
 ---
 
-📌 Deskripsi Singkat Tugas
+## 📌 Deskripsi Singkat Tugas
 Modul ini mengharuskan mahasiswa untuk menambahkan dua system call baru pada kernel xv6-public (x86), yaitu:
 
 getpinfo(struct pinfo *ptable): Untuk mendapatkan informasi semua proses aktif dalam sistem.
 
 getreadcount(): Untuk menghitung jumlah pemanggilan read() sejak sistem boot.
 
-🛠️ Rincian Implementasi
+## 🛠️ Rincian Implementasi
 Langkah-langkah implementasi:
 
 Menambahkan struktur pinfo di proc.h untuk menyimpan daftar proses aktif.
@@ -33,15 +33,15 @@ Membuat dua program uji ptest.c dan rtest.c untuk menguji fungsi yang telah dita
 
 Mendaftarkan program uji ke dalam Makefile.
 
-✅ Uji Fungsionalitas
+## ✅ Uji Fungsionalitas
 Program uji yang digunakan:
 
 ptest: Menguji apakah system call getpinfo() dapat mengambil informasi proses aktif.
 
 rtest: Menguji apakah getreadcount() dapat menghitung jumlah pemanggilan fungsi read().
 
-📷 Hasil Uji
-📍 Contoh Output ptest:
+## 📷 Hasil Uji
+### 📍 Contoh Output ptest:
 yaml
 Copy
 Edit
@@ -49,7 +49,7 @@ PID	MEM	NAME
 1	4096	init
 2	2048	sh
 3	2048	ptest
-📍 Contoh Output rtest:
+### 📍 Contoh Output rtest:
 mathematica
 Copy
 Edit
@@ -57,17 +57,17 @@ Read Count Sebelum: 4
 hello
 Read Count Setelah: 5
 
-📸 Screenshoot
+## 📸 Screenshoot
 <img width="802" height="367" alt="modul1" src="https://github.com/user-attachments/assets/aa85da42-ed05-45f5-ad71-d83992a9fced" />
 
-⚠️ Kendala yang Dihadapi
+## ⚠️ Kendala yang Dihadapi
 Awalnya sempat salah dalam implementasi argptr() di sys_getpinfo, sehingga pointer ptable tidak dapat diakses kernel.
 
 Kesalahan kecil saat menambahkan entri di Makefile menyebabkan program ptest tidak dikenali sampai file Makefile diperbaiki.
 
 Kernel panic terjadi ketika membaca pointer user-space yang tidak valid.
 
-📚 Referensi
+## 📚 Referensi
 Buku xv6 (MIT): https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf
 
 Repositori xv6: https://github.com/mit-pdos/xv6-public
