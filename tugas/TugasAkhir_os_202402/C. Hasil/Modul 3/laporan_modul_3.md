@@ -2,96 +2,81 @@
 
 **Mata Kuliah**: Sistem Operasi
 **Semester**: Genap / Tahun Ajaran 2024–2025
-**Nama**: `<Nama Lengkap>`
-**NIM**: `<Nomor Induk Mahasiswa>`
+**Nama**: `Ahmad Rafie Ramadhani Azzaki`
+**NIM**: `240202849`
 **Modul yang Dikerjakan**:
-`(Contoh: Modul 1 – System Call dan Instrumentasi Kernel)`
+`(Modul 3 — Manajemen Memori Tingkat Lanjut (xv6-public x86))`
 
 ---
 
 ## 📌 Deskripsi Singkat Tugas
+Pada modul ini, saya mengimplementasikan dua fitur utama dalam manajemen memori sistem operasi:
 
-Tuliskan deskripsi singkat dari modul yang Anda kerjakan. Misalnya:
+`Copy-on-Write (CoW)` pada `fork()`, agar proses anak hanya menyalin halaman memori saat menulis `(write)`.
 
-* **Modul 1 – System Call dan Instrumentasi Kernel**:
-  Menambahkan dua system call baru, yaitu `getpinfo()` untuk melihat proses yang aktif dan `getReadCount()` untuk menghitung jumlah pemanggilan `read()` sejak boot.
----
+`Shared Memory (System V style)` melalui dua system call baru: `shmget(int key)` dan `shmrelease(int key)` untuk berbagi memori antar proses.
 
 ## 🛠️ Rincian Implementasi
+1. Copy-on-Write Fork
+Menambahkan array `ref_count[]` di `vm.c` untuk mencatat referensi tiap halaman fisik.
 
-Tuliskan secara ringkas namun jelas apa yang Anda lakukan:
+Menambahkan flag `PTE_COW` di `mmu.h` untuk menandai halaman Copy-on-Write.
 
-### Contoh untuk Modul 1:
+Mengganti fungsi `copyuvm()` menjadi `cowuvm()` di `vm.c` agar anak dan induk berbagi halaman read-only.
 
-* Menambahkan dua system call baru di file `sysproc.c` dan `syscall.c`
-* Mengedit `user.h`, `usys.S`, dan `syscall.h` untuk mendaftarkan syscall
-* Menambahkan struktur `struct pinfo` di `proc.h`
-* Menambahkan counter `readcount` di kernel
-* Membuat dua program uji: `ptest.c` dan `rtest.c`
----
+Menangani page fault di `trap.c` untuk menyalin halaman secara fisik hanya saat proses mencoba menulis.
+
+Mengubah `fork()` di `proc.c` agar menggunakan `cowuvm()`.
+
+2. Shared Memory ala System V
+Menambahkan array `shmtab[]` di `vm.c` untuk menyimpan key, frame, dan refcount.
+
+Mengimplementasikan `sys_shmget()` dan `sys_shmrelease()` di `sysproc.c`.
+
+Menambahkan system call `shmget()` dan `shmrelease()`:
+
+Registrasi di `syscall.c`, `syscall.h`, `usys.S`, dan `user.h`.
 
 ## ✅ Uji Fungsionalitas
+Program uji yang digunakan:
 
-Tuliskan program uji apa saja yang Anda gunakan, misalnya:
+`cowtest.c`: Menguji fungsi `fork()` dan memori `CoW`.
 
-* `ptest`: untuk menguji `getpinfo()`
-* `rtest`: untuk menguji `getReadCount()`
-* `cowtest`: untuk menguji fork dengan Copy-on-Write
-* `shmtest`: untuk menguji `shmget()` dan `shmrelease()`
-* `chmodtest`: untuk memastikan file `read-only` tidak bisa ditulis
-* `audit`: untuk melihat isi log system call (jika dijalankan oleh PID 1)
-
----
+`shmtest.c`: Menguji penggunaan shared memory antar proses.
 
 ## 📷 Hasil Uji
-
-Lampirkan hasil uji berupa screenshot atau output terminal. Contoh:
-
-### 📍 Contoh Output `cowtest`:
-
-```
+### 📍 Output `cowtest.c`
+yaml
+Copy
+Edit
 Child sees: Y
 Parent sees: X
-```
+Hasil menunjukkan bahwa proses anak menulis ke salinan memorinya sendiri (halaman disalin karena CoW).
 
-### 📍 Contoh Output `shmtest`:
-
-```
+### 📍 Output shmtest.c
+less
+Copy
+Edit
 Child reads: A
 Parent reads: B
-```
+Menunjukkan bahwa halaman shared memory berhasil diakses bersama dan perubahan dari anak terlihat di induk.
 
-### 📍 Contoh Output `chmodtest`:
+## 📸 Screenshoot
 
-```
-Write blocked as expected
-```
+<img width="1145" height="348" alt="modul3(1)" src="https://github.com/user-attachments/assets/66a8500c-e19c-42a5-9dff-deb092259aa0" />
 
-Jika ada screenshot:
-
-```
-![hasil cowtest](./screenshots/cowtest_output.png)
-```
-
----
+<img width="1142" height="426" alt="modul3(2)" src="https://github.com/user-attachments/assets/562e5818-5746-44c8-9628-bc79a1343450" />
 
 ## ⚠️ Kendala yang Dihadapi
+Debugging page fault cukup rumit karena perlu mengecek flag `PTE_COW`, validitas `PTE`, dan alokasi `kalloc()` yang bisa gagal.
 
-Tuliskan kendala (jika ada), misalnya:
+Lupa memanggil `decref()` saat halaman ditimpa menyebabkan memory leak.
 
-* Salah implementasi `page fault` menyebabkan panic
-* Salah memetakan alamat shared memory ke USERTOP
-* Proses biasa bisa akses audit log (belum ada validasi PID)
+Salah pemetaan alamat shared memory menyebabkan overwrite memori stack.
 
----
+📚 Referensi
+Buku xv6 MIT (rev11)
 
-## 📚 Referensi
+Repositori xv6-public GitHub
 
-Tuliskan sumber referensi yang Anda gunakan, misalnya:
-
-* Buku xv6 MIT: [https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf](https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf)
-* Repositori xv6-public: [https://github.com/mit-pdos/xv6-public](https://github.com/mit-pdos/xv6-public)
-* Stack Overflow, GitHub Issues, diskusi praktikum
-
----
-
+Diskusi praktikum dan Stack Overflow
